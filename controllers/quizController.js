@@ -1,6 +1,6 @@
 const { Quiz, Question } = require('../models/Quiz');
 
-// Get all quizzes
+
 exports.getQuizzes = async (req, res) => {
   try {
     const quizzes = await Quiz.find().populate('questions');
@@ -13,7 +13,7 @@ exports.getQuizzes = async (req, res) => {
   }
 };
 
-// Get quiz by ID
+
 exports.getQuizById = async (req, res) => {
   try {
     const quiz = await Quiz.findById(req.params.quizId).populate('questions');
@@ -24,7 +24,7 @@ exports.getQuizById = async (req, res) => {
   }
 };
 
-// Create a new quiz
+
 exports.createQuiz = async (req, res) => {
   try {
     const newQuiz = new Quiz(req.body);
@@ -38,7 +38,7 @@ exports.createQuiz = async (req, res) => {
 };
 
 
-// Add a question to a quiz
+
 exports.addQuestionToQuiz = async (req, res) => {
   try {
     const { text, options, correctAnswerIndex } = req.body;
@@ -55,7 +55,20 @@ exports.addQuestionToQuiz = async (req, res) => {
   }
 };
 
-// Delete a quiz by ID
+exports.addMultipleQuestionsToQuiz = async (req, res) => {
+  try {
+    const questions = await Question.insertMany(req.body.questions);
+    const quiz = await Quiz.findById(req.params.quizId);
+
+    questions.forEach(question => quiz.questions.push(question._id));
+    await quiz.save();
+
+    res.status(201).json(quiz);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 exports.deleteQuiz = async (req, res) => {
   try {
     const quiz = await Quiz.findByIdAndDelete(req.params.quizId);
@@ -65,6 +78,20 @@ exports.deleteQuiz = async (req, res) => {
     }
     
     res.json({ message: 'Quiz deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getQuestionsWithKeyword = async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.quizId).populate({
+      path: 'questions',
+      match: { text: /capital/i }
+    });
+
+    if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
+    res.json(quiz.questions);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
