@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getQuizzes, getQuizById, createQuiz, addQuestionToQuiz, deleteQuiz } = require('../controllers/quizController');
+const { getQuizzes, getQuizById, createQuiz, addQuestionToQuiz, deleteQuiz, getQuestionsWithKeyword} = require('../controllers/quizController');
 
 router.get('/quizzes', getQuizzes);
 router.get('/quizzes/:quizId', getQuizById);
