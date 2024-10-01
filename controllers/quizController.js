@@ -1,6 +1,6 @@
 const { Quiz, Question } = require('../models/Quiz');
 
-
+// quizController
 exports.getQuizzes = async (req, res) => {
   try {
     const quizzes = await Quiz.find().populate('questions');
@@ -13,7 +13,6 @@ exports.getQuizzes = async (req, res) => {
   }
 };
 
-
 exports.getQuizById = async (req, res) => {
   try {
     const quiz = await Quiz.findById(req.params.quizId).populate('questions');
@@ -23,7 +22,6 @@ exports.getQuizById = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 exports.createQuiz = async (req, res) => {
   try {
@@ -37,8 +35,17 @@ exports.createQuiz = async (req, res) => {
   }
 };
 
+exports.deleteQuiz = async (req, res) => {
+  try {
+    const quiz = await Quiz.findByIdAndDelete(req.params.quizId);
+    if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
+    res.json({ message: 'Quiz deleted' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
 
-
+// questionController
 exports.addQuestionToQuiz = async (req, res) => {
   try {
     const { text, options, correctAnswerIndex } = req.body;
@@ -55,7 +62,7 @@ exports.addQuestionToQuiz = async (req, res) => {
   }
 };
 
-exports.addMultipleQuestionsToQuiz = async (req, res) => {
+exports.addQuestionsToQuiz = async (req, res) => {
   try {
     const questions = await Question.insertMany(req.body.questions);
     const quiz = await Quiz.findById(req.params.quizId);
@@ -66,20 +73,6 @@ exports.addMultipleQuestionsToQuiz = async (req, res) => {
     res.status(201).json(quiz);
   } catch (err) {
     res.status(400).json({ error: err.message });
-  }
-};
-
-exports.deleteQuiz = async (req, res) => {
-  try {
-    const quiz = await Quiz.findByIdAndDelete(req.params.quizId);
-    
-    if (!quiz) {
-      return res.status(404).json({ message: 'Quiz not found' });
-    }
-    
-    res.json({ message: 'Quiz deleted' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
   }
 };
 
