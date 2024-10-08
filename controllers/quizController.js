@@ -45,6 +45,20 @@ exports.deleteQuiz = async (req, res) => {
   }
 };
 
+exports.updateQuiz = async (req, res) => {
+  try {
+    const updatedQuiz = await Quiz.findByIdAndUpdate(
+      req.params.quizId,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedQuiz) return res.status(404).json({ message: 'Quiz not found' });
+    res.json(updatedQuiz);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
 // questionController
 exports.addQuestionToQuiz = async (req, res) => {
   try {
@@ -71,6 +85,20 @@ exports.addQuestionsToQuiz = async (req, res) => {
     await quiz.save();
 
     res.status(201).json(quiz);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+exports.updateQuestion = async (req, res) => {
+  try {
+    const updatedQuestion = await Question.findByIdAndUpdate(
+      req.params.questionId,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedQuestion) return res.status(404).json({ message: 'Question not found' });
+    res.json(updatedQuestion);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
