@@ -10,9 +10,11 @@ router.delete('/quizzes/:quizId', quizController.deleteQuiz);
 router.put('/quizzes/:quizId', quizController.updateQuiz);
 
 // Route for question
+router.get('/questions', quizController.getQuestions);
 router.post('/quizzes/:quizId/question', quizController.addQuestionToQuiz);
 router.post('/quizzes/:quizId/questions', quizController.addQuestionsToQuiz);
 router.get('/quizzes/:quizId/populate', quizController.getQuestionsWithKeyword);
 router.put('/questions/:questionId', quizController.updateQuestion);
+router.delete('/questions/:questionId', quizController.deleteQuestion);
 
 module.exports = router;

@@ -60,6 +60,19 @@ exports.updateQuiz = async (req, res) => {
 };
 
 // questionController
+
+exports.getQuestions = async (req, res) => {
+  try {
+    const questions = await Question.find();
+    if (!questions || questions.length === 0) {
+      return res.status(404).json({ message: 'No questions found' });
+    }
+    res.json(questions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.addQuestionToQuiz = async (req, res) => {
   try {
     const { text, options, correctAnswerIndex } = req.body;
@@ -103,6 +116,26 @@ exports.updateQuestion = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
+exports.deleteQuestion = async (req, res) => {
+  try {
+    const deletedQuestion = await Question.findByIdAndDelete(req.params.questionId);
+    if (!deletedQuestion) {
+      return res.status(404).json({ message: 'Question not found' });
+    }
+    
+    const quiz = await Quiz.findOneAndUpdate(
+      { questions: req.params.questionId },
+      { $pull: { questions: req.params.questionId } },
+      { new: true }
+    );
+
+    res.status(200).json({ message: 'Question deleted successfully', quiz });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 
 exports.getQuestionsWithKeyword = async (req, res) => {
   try {
